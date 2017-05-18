@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO log</title>
+    <style>
+      #main,#log_messages {
+        border: 1px solid #ccc;
+        max-width: 1000px;
+        height: 750px;
+        padding: 10px;
+        MARGIN-RIGHT: auto;
+        MARGIN-LEFT: auto;
+      }
+      #log_messages {
+        height: 700px;
+        overflow-y: auto;
+        background-color: black;
+        color: white;
+      }
+      #stopButton {
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+
+  <script src="/js/socket.io.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script>
+    $(function(){
+
+      var socket = io();
+
+      // parse url query strings
+      function getParameterByName(name, url) {
+        if (!url) {
+          url = window.location.href;
+        }
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+      }
+
+      // get query string
+      var host = getParameterByName('host');
+
+      socket.on(host, function(msg) {
+        $("#log").append($('<li>').text(msg));
+        // scroll div to bottom
+        $('#log_messages').animate({
+           scrollTop: $('#log_messages')[0].scrollHeight}, 100);
+      });
+
+      // stop socket
+      $("#stopButton").on("click", function() {
+        socket.disconnect();
+      });
+    });
+  </script>
+
+  <body>
+    <div id="main">
+      <div id="log_messages">
+        <ul id="log"></ul>
+      </div>
+      <button type="button" id="stopButton">STOP</button>
+    </div>
+  </body>
+</html>
